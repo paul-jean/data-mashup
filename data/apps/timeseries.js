@@ -1,8 +1,6 @@
 var margin = {top: 20, right: 30, bottom: 20, left: 40},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
-var y = d3.scale.linear()
-    .range([height, 0]);
 var chart = d3.select(".chart")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -22,7 +20,17 @@ d3.csv("apps-hourly.csv", type, function(error, data) {
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
-  y.domain([0, d3.max(data, function (d) { return d.duration; })]);
+
+  var y = d3.scale.linear()
+      .domain([0, d3.max(data, function (d) { return d.duration; })])
+      .range([height, 0]);
+  var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left");
+  chart.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+
   var barWidth = width / data.length;
 
   var bar = chart.selectAll("g")
