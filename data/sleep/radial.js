@@ -116,4 +116,24 @@ d3.json("./sleep-quality.json", function(err, json) {
       .attr("r", x(1))
       .attr("class", ".axis");
 
+  svg.append('g')
+        .attr('transform','translate('+width/2+','+height/2+')')
+        .selectAll('g')
+        .data(d3.range(10))
+        .enter()
+        .append('g')
+        .attr('transform',function(d,i){
+
+          var yTranslate = yRadial(0.5);
+          return 'translate(0,'+(-yTranslate)+') rotate('+ (i/10)*360 +' ' + 0 + ' ' + yTranslate + ')';
+          
+        })
+        .append('line')
+        .attr('stroke','black')
+        .attr('x1',0)
+        .attr('y1',10)
+        .attr('x2',0)
+        .attr('y2',-10);
+
+
 });
