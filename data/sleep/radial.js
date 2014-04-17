@@ -18,8 +18,15 @@ d3.json("./sleep-quality.json", function(err, json) {
   });
   var x = d3.scale.linear()
       .range([0, width])
-      .domain([-2, 2]);
+      .domain([0, d3.max(timeseries, function(d) { return d[0]; })]);
   var y = d3.scale.linear()
+      .range([height, 0])
+      .domain([0, d3.max(timeseries, function(d) { return d[1]; })]);
+
+  var xRadial = d3.scale.linear()
+      .range([0, width])
+      .domain([-2, 2]);
+  var yRadial = d3.scale.linear()
       .range([height, 0])
       .domain([-2, 2]);
 
@@ -49,14 +56,19 @@ d3.json("./sleep-quality.json", function(err, json) {
   console.log(smax);
 
   var line = d3.svg.line()
+      .interpolate("linear")
+      .x(function(d) { return x(d[0]); })
+      .y(function(d) { return y(d[1]); });
+
+  var radialLine = d3.svg.line()
       .x(function(d) {
         var xRaw = rcos(d[0], d[1], tmax);
-        var xCoord = x(xRaw);
+        var xCoord = xRadial(xRaw);
         return xCoord;
       })
       .y(function(d) {
         var yRaw = rsin(d[0], d[1], tmax);
-        var yCoord = y(yRaw);
+        var yCoord = yRadial(yRaw);
         return yCoord;
       });
 
@@ -64,5 +76,11 @@ d3.json("./sleep-quality.json", function(err, json) {
       .datum(timeseries)
       .attr("class", "line")
       .attr("d", line);
+
+  svg.selectAll("path")
+      .transition()
+      .delay(1000)
+      .duration(1000)
+      .attr("d", radialLine);
 
 });
